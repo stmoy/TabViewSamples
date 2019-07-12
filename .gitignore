@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/TabTester/.vs/TabTester/v15
+/TabTester/TabTester/obj/x86/Debug
