@@ -1,0 +1,89 @@
+﻿<Page
+    x:Class="RibbonUsingTabView.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RibbonUsingTabView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <winui:TabView IsAddButtonVisible="False">
+            <winui:TabView.Items>
+                <winui:TabViewItem Header="Home" IsCloseable="False" Icon="Home">
+                    <StackPanel Orientation="Horizontal" Background="{ThemeResource NavigationViewExpandedPaneBackground}">
+                        <AppBarButton LabelPosition="Collapsed" Icon="Undo" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Redo" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Paste" Width="40" />
+                        <AppBarSeparator />
+                        <ComboBox SelectedIndex="0" VerticalAlignment="Center">
+                            <ComboBoxItem Content="Calibri Light" />
+                        </ComboBox>
+                        <ComboBox SelectedIndex="0" VerticalAlignment="Center" Margin="4,0">
+                            <ComboBoxItem Content="20" />
+                        </ComboBox>
+                        <AppBarButton LabelPosition="Collapsed" Icon="Bold" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Italic" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Underline" Width="40" />
+                    </StackPanel>
+                </winui:TabViewItem>
+                <winui:TabViewItem Header="Insert" IsCloseable="False" Icon="Edit">
+                    <StackPanel Orientation="Horizontal" Background="{ThemeResource NavigationViewExpandedPaneBackground}">
+                        <AppBarButton LabelPosition="Collapsed" Icon="Undo" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Redo" Width="40" />
+                        <AppBarSeparator />
+                        <Button Background="Transparent">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Symbol="Link" Margin="0,0,8,0" />
+                                    <TextBlock Text="Link" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Background="Transparent">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Symbol="Attach" Margin="0,0,8,0" />
+                                    <TextBlock Text="File" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Background="Transparent">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Symbol="Document" Margin="0,0,8,0" />
+                                    <TextBlock Text="Print" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                    </StackPanel>
+                </winui:TabViewItem>
+                <winui:TabViewItem Header="View" IsCloseable="False" Icon="View">
+                    <StackPanel Orientation="Horizontal" Background="{ThemeResource NavigationViewExpandedPaneBackground}">
+                        <AppBarButton LabelPosition="Collapsed" Icon="NewWindow" Width="40" />
+                        <AppBarSeparator />
+                        <AppBarButton LabelPosition="Collapsed" Icon="ZoomOut" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="ZoomIn" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="FullScreen" Width="40" />
+                        <AppBarSeparator />
+                        <AppBarButton LabelPosition="Collapsed" Icon="Delete" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="FontIncrease" Width="40" />
+                        <AppBarButton LabelPosition="Collapsed" Icon="FontDecrease" Width="40" />
+
+                    </StackPanel>
+                </winui:TabViewItem>
+            </winui:TabView.Items>
+        </winui:TabView>
+        
+        <Grid x:Name="CanvasContent" Grid.Row="1" />
+
+    </Grid>
+</Page>
