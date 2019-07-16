@@ -1,6 +1,7 @@
 ﻿using Microsoft.Toolkit.Uwp.UI.Controls;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.WindowManagement;
@@ -14,29 +15,29 @@ namespace TabTester
     // https://docs.microsoft.com/en-us/windows/uwp/design/shell/title-bar
     public sealed partial class MainPage : Page
     {
-        // TODO: Support more than just strings...
-        ObservableCollection<string> MyItems = new ObservableCollection<string>();
-
         AppWindow RootAppWindow = null;
+
+        private const string DataIdentifier = "MyTabItem";
+
         public MainPage()
         {
             this.InitializeComponent();
 
-            MyItems.CollectionChanged += MyItems_CollectionChanged;
+            Tabs.Items.VectorChanged += Items_VectorChanged;
         }
 
-        private async void MyItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private async void Items_VectorChanged(Windows.Foundation.Collections.IObservableVector<object> sender, Windows.Foundation.Collections.IVectorChangedEventArgs @event)
         {
+
             // If there are no more tabs and we're in a secondary AppWindow, close that Window.
-            if ((sender as ObservableCollection<string>).Count == 0 && RootAppWindow != null)
+            if (sender.Count == 0 && RootAppWindow != null)
             {
                 await RootAppWindow.CloseAsync();
             }
-            
+
             // TODO: Close the root CoreApplicationView?
         }
 
-        // TODO: BUG?: OnNavigatedTo is never called in the AppWindow codepath?
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -51,7 +52,8 @@ namespace TabTester
                 // Main Window -- add some default items
                 for (int i = 0; i < 10; i++)
                 {
-                    MyItems.Add("Item " + i);
+                    // TODO: Add a user control to the content of the TabViewItem
+                    Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new ToggleSwitch() { Header=$"Item {i}" } });
                 }
 
                 // Extend into the titlebar
@@ -73,9 +75,9 @@ namespace TabTester
             }
         }
 
-        public void AddItemToItems(object item)
+        public void AddTabToTabs(TabViewItem tab)
         {
-            MyItems.Add(item.ToString());
+            Tabs.Items.Add(tab);
         }
 
         // Create a new Window once the Tab is dragged outside.
@@ -88,7 +90,8 @@ namespace TabTester
 
             ElementCompositionPreview.SetAppWindowContent(newWindow, newPage);
 
-            newPage.AddItemToItems(e.Item);
+            Tabs.Items.Remove(e.Tab);
+            newPage.AddTabToTabs(e.Tab);
 
             await newWindow.TryShowAsync();
         }
@@ -96,29 +99,31 @@ namespace TabTester
 
         private void Tab_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            // We can only drag one tab at a time, so grab the first one...
-            var firstItem = e.Items[0];
+            // TODO: Why does e.Items[0] return the ToggleSwitch and not the item itself??
 
-            // ... set the drag data to the text of the tab...
-            e.Data.SetText(firstItem.ToString());
+            // We can only drag one tab at a time, so grab the first one...
+            var firstItem = (e.Items[0] as FrameworkElement).Parent; 
+
+            // ... set the drag data to the tab...
+            e.Data.Properties.Add(DataIdentifier, firstItem);
 
             // ... and indicate that we can move it 
             e.Data.RequestedOperation = DataPackageOperation.Move;
         }
 
-        private async void Tab_Drop(object sender, DragEventArgs e)
+        private void Tab_Drop(object sender, DragEventArgs e)
         {
             // This event is called when we're dragging between different TabViews
             // It is responsible for handling the drop of the item into the second TabView
-            if (e.DataView.Contains(StandardDataFormats.Text))
+
+            object obj;
+            if (e.DataView.Properties.TryGetValue(DataIdentifier, out obj))
             {
                 var destinationTabView = sender as TabView;
-                var destinationItemsSource = destinationTabView?.ItemsSource as ObservableCollection<string>;
+                var destinationItems = destinationTabView.Items;
 
-                if (destinationItemsSource != null)
+                if (destinationItems != null)
                 {
-                    var text = await e.DataView.GetTextAsync();
-
                     // First we need to get the position in the List to drop to
                     var index = -1;
 
@@ -134,39 +139,34 @@ namespace TabTester
                         }
                     }
 
+                    // The TabView can only be in one tree at a time. Before moving it to the new TabView, remove it from the old.
+                    ((obj as TabViewItem).Parent as TabView).Items.Remove(obj);
+
+
                     if (index < 0)
                     {
                         // We didn't find a transition point, so we're at the end of the list
-                        destinationItemsSource.Add(text);
+                        destinationItems.Add(obj);
                     }
                     else if (index < destinationTabView.Items.Count)
                     {
                         // Otherwise, insert at the provided index.
-                        destinationItemsSource.Insert(index, text);
+                        destinationItems.Insert(index, obj);
                     }
+
+                    // Select the newly dragged tab
+                    destinationTabView.SelectedItem = obj;
                 }
             }
         }
 
         // This method prevents the TabView from handling things that aren't text (ie. files, images, etc.)
-        // TODO: Is this method necessary?
         private void Tab_DragOver(object sender, DragEventArgs e)
         {
-            if (e.DataView.Contains(StandardDataFormats.Text))
+            if (e.DataView.Properties.ContainsKey(DataIdentifier))
             {
                 e.AcceptedOperation = DataPackageOperation.Move;
             }
-        }
-
-        // Remove the item from the collection once the drag has been completed.
-        private void Tab_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
-        {
-            // TODO: When reorganizing tabs within the same window, the tab gets removed.
-            // We need to maintain state somehow, but not on MainPage (because we create a new MainPage every time)
-            
-            var item = args.Items[0] as string;
-            var tabViewItemSource = sender?.ItemsSource as ObservableCollection<string>;
-            tabViewItemSource.Remove(item);
         }
     }
 }
