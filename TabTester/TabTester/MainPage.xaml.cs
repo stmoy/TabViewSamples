@@ -53,7 +53,7 @@ namespace TabTester
                 for (int i = 0; i < 10; i++)
                 {
                     // TODO: Add a user control to the content of the TabViewItem
-                    Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new ToggleSwitch() { Header=$"Item {i}" } });
+                    Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new MyTabContentControl() { DataContext = $"Item {i}" } });
                 }
 
                 // Extend into the titlebar
@@ -102,7 +102,7 @@ namespace TabTester
             // TODO: Why does e.Items[0] return the ToggleSwitch and not the item itself??
 
             // We can only drag one tab at a time, so grab the first one...
-            var firstItem = (e.Items[0] as FrameworkElement).Parent; 
+            var firstItem = (e.Items[0] as FrameworkElement).Parent;
 
             // ... set the drag data to the tab...
             e.Data.Properties.Add(DataIdentifier, firstItem);
