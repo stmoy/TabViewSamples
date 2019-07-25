@@ -50,7 +50,7 @@ namespace TabTester
             if (window == null)
             {
                 // Main Window -- add some default items
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     // TODO: Add a user control to the content of the TabViewItem
                     Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new MyTabContentControl() { DataContext = $"Item {i}" } });
@@ -119,6 +119,12 @@ namespace TabTester
             object obj;
             if (e.DataView.Properties.TryGetValue(DataIdentifier, out obj))
             {
+                // TODO - BUG: obj should never be null, but occassionally is. Why?
+                if (obj == null)
+                {
+                    return;
+                }
+
                 var destinationTabView = sender as TabView;
                 var destinationItems = destinationTabView.Items;
 
