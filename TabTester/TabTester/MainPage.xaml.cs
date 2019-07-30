@@ -1,5 +1,6 @@
-﻿using Microsoft.Toolkit.Uwp.UI.Controls;
+﻿//using Microsoft.Toolkit.Uwp.UI.Controls;
 using System;
+using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -22,8 +23,9 @@ namespace TabTester
         public MainPage()
         {
             this.InitializeComponent();
-
-            Tabs.Items.VectorChanged += Items_VectorChanged;
+            
+            // TODO: This is not yet implemented in WinUI
+            //Tabs.Items.VectorChanged += Items_VectorChanged;
         }
 
         private async void Items_VectorChanged(Windows.Foundation.Collections.IObservableVector<object> sender, Windows.Foundation.Collections.IVectorChangedEventArgs @event)
@@ -81,7 +83,7 @@ namespace TabTester
         }
 
         // Create a new Window once the Tab is dragged outside.
-        private async void TabView_TabDraggedOutside(object sender, Microsoft.Toolkit.Uwp.UI.Controls.TabDraggedOutsideEventArgs e)
+        private async void TabView_TabDraggedOutside(TabView sender, TabViewTabDraggedOutsideEventArgs e)
         {
             AppWindow newWindow = await AppWindow.TryCreateAsync();
 
@@ -97,8 +99,10 @@ namespace TabTester
         }
 
 
-        private void Tab_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        private void Tabs_TabStripDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
+            // TODO: This crashes when updating to WinUI because e.Items[0] is NULL. Why?
+
             // TODO: Why does e.Items[0] return the ToggleSwitch and not the item itself??
 
             // We can only drag one tab at a time, so grab the first one...

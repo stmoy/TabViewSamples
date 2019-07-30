@@ -7,20 +7,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls">
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls">
 
     <Grid HorizontalAlignment="Stretch">
-        <toolkit:TabView x:Name="Tabs"
-                         CanCloseTabs="False"
-                         CanDragItems="True"
-                         CanReorderItems="True"
-                         AllowDrop="True"
-                         TabDraggedOutside="TabView_TabDraggedOutside"
+        <winui:TabView x:Name="Tabs"
+                       CanCloseTabs="False"
+                       CanDragDropTabs="True"
+
+                       AllowDrop="True"
+                       TabDraggedOutside="TabView_TabDraggedOutside"
                          
-                         DragOver="Tab_DragOver"
-                         Drop="Tab_Drop"
-                         DragItemsStarting="Tab_OnDragItemsStarting" >
-        </toolkit:TabView>
+                       DragOver="Tab_DragOver"
+                       Drop="Tab_Drop"
+
+                       TabStripDragItemsStarting="Tabs_TabStripDragItemsStarting">
+        </winui:TabView>
 
         <Grid x:Name="CustomDragRegion" Width="200" Height="40" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" />
     </Grid>
