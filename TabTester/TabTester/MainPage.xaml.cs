@@ -178,5 +178,10 @@ namespace TabTester
                 e.AcceptedOperation = DataPackageOperation.Move;
             }
         }
+
+        private void Tabs_AddButtonClick(TabView sender, object args)
+        {
+            sender.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = "New Item", Content = new MyTabContentControl() { DataContext = "New Item" } });
+        }
     }
 }

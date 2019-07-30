@@ -14,6 +14,8 @@
         <winui:TabView x:Name="Tabs"
                        CanCloseTabs="False"
                        CanDragDropTabs="True"
+                       
+                       AddButtonClick="Tabs_AddButtonClick"
 
                        AllowDrop="True"
                        TabDraggedOutside="TabView_TabDraggedOutside"
