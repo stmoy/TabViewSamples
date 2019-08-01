@@ -10,6 +10,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media;
+using Windows.UI.ViewManagement;
 
 namespace TabTester
 {
@@ -58,9 +60,15 @@ namespace TabTester
                     Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new MyTabContentControl() { DataContext = $"Item {i}" } });
                 }
 
+                Tabs.SelectedIndex = 0;
+
                 // Extend into the titlebar
                 var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
                 coreTitleBar.ExtendViewIntoTitleBar = true;
+
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
+                titleBar.ButtonForegroundColor = Windows.UI.Colors.Gray;
 
                 Window.Current.SetTitleBar(CustomDragRegion);
             }
@@ -72,6 +80,7 @@ namespace TabTester
                 // Extend into the titlebar
                 window.TitleBar.ExtendsContentIntoTitleBar = true;
                 window.TitleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
+                window.TitleBar.ButtonForegroundColor = Windows.UI.Colors.Gray;
 
                 window.Frame.DragRegionVisuals.Add(CustomDragRegion);
             }
@@ -182,6 +191,16 @@ namespace TabTester
         private void Tabs_AddButtonClick(TabView sender, object args)
         {
             sender.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = "New Item", Content = new MyTabContentControl() { DataContext = "New Item" } });
+        }
+
+        private void BackgroundColorAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tabs.Background = new SolidColorBrush(Windows.UI.Colors.Blue);
+        }
+
+        private void ThemeAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            RootPage.RequestedTheme = RootPage.RequestedTheme != ElementTheme.Light ? ElementTheme.Light : ElementTheme.Dark;
         }
     }
 }
