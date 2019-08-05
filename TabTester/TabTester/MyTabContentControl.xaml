@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <StackPanel Margin="12">
+    <StackPanel Padding="12">
         <TextBlock Text="{Binding}" Style="{ThemeResource TitleTextBlockStyle}" />
         <ToggleSwitch x:Name="ControlToggle" Margin="6" Header="Turn on ProgressRing" />
         <ProgressRing IsActive="{x:Bind ControlToggle.IsOn, Mode=OneWay}" HorizontalAlignment="Left" Margin="6" />

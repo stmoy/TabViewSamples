@@ -25,7 +25,7 @@ namespace TabTester
         public MainPage()
         {
             this.InitializeComponent();
-            
+
             // TODO: This is not yet implemented in WinUI
             //Tabs.Items.VectorChanged += Items_VectorChanged;
         }
@@ -193,14 +193,90 @@ namespace TabTester
             sender.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = "New Item", Content = new MyTabContentControl() { DataContext = "New Item" } });
         }
 
+        Windows.UI.Color stashedColor;
+
         private void BackgroundColorAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            Tabs.Background = new SolidColorBrush(Windows.UI.Colors.Blue);
+            // TODO: Tabs.Background doesn't set the correct thing yet. This chunk of code is a big workaround and will be removed.
+            var contains = Application.Current.Resources.ContainsKey("TabViewBackground");
+
+            bool isPlain = (sender as AppBarToggleButton).IsChecked == true;
+
+            if (contains)
+            {
+                var resource = Application.Current.Resources["TabViewBackground"];
+
+                if (isPlain)
+                {
+                    stashedColor = (resource as SolidColorBrush).Color;
+                    
+                    (resource as SolidColorBrush).Color = GetAccentColorForTheme();
+                }
+                else
+                {
+                    (resource as SolidColorBrush).Color = stashedColor;
+                }
+            }
+        }
+
+        private Windows.UI.Color GetAccentColorForTheme()
+        {
+            if (IsEffectivelyLightTheme())
+            {
+                return (Windows.UI.Color)Application.Current.Resources["SystemAccentColorLight2"];
+            }
+            else
+            {
+                return (Windows.UI.Color)Application.Current.Resources["SystemAccentColorDark2"];
+            }
         }
 
         private void ThemeAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            RootPage.RequestedTheme = RootPage.RequestedTheme != ElementTheme.Light ? ElementTheme.Light : ElementTheme.Dark;
+            RootPage.RequestedTheme = IsEffectivelyLightTheme() ? ElementTheme.Dark : ElementTheme.Light;
+        }
+
+        private bool IsEffectivelyLightTheme()
+        {
+            bool isLight = false;
+
+            if (RootPage.RequestedTheme == ElementTheme.Light)
+            {
+                isLight = true;
+            }
+            else if (RootPage.RequestedTheme == ElementTheme.Dark)
+            {
+                isLight = false;
+            }
+            else
+            {
+                // Theme = default
+                if (((SolidColorBrush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]).Color == Windows.UI.Colors.White)
+                {
+                    isLight = true;
+                }
+                else
+                {
+                    isLight = false;
+                }
+
+            }
+
+            return isLight;
+        }
+
+        private void AcrylicAppBarToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isPlain = (sender as AppBarToggleButton).IsChecked == true;
+
+            if (isPlain)
+            {
+                Tabs.Background = (Brush)Application.Current.Resources["SystemControlAcrylicWindowBrush"];
+            }
+            else
+            {
+                Tabs.Background = null;
+            }
         }
     }
 }

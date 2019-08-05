@@ -12,15 +12,18 @@
     xmlns:winui="using:Microsoft.UI.Xaml.Controls">
 
     <Page.BottomAppBar>
-        <CommandBar>
-            <AppBarButton Label="Theme" Icon="Placeholder" Click="ThemeAppBarButton_Click" />
-            <AppBarButton Label="Accent" Click="BackgroundColorAppBarButton_Click" Icon="Highlight" />
+        <CommandBar DefaultLabelPosition="Right">
+            <AppBarToggleButton x:Name="ThemeButton" Label="Default Theme" Icon="Placeholder" Click="ThemeAppBarButton_Click" IsChecked="True" />
+            <AppBarToggleButton Label="Toggle Accent in Strip" Checked="BackgroundColorAppBarButton_Click" Unchecked="BackgroundColorAppBarButton_Click" Icon="Highlight" IsEnabled="{x:Bind (x:Boolean)ThemeButton.IsChecked, Mode=OneWay}" />
+            <AppBarToggleButton Label="Toggle Acrylic in Content" Checked="AcrylicAppBarToggleButton_Click" Unchecked="AcrylicAppBarToggleButton_Click" Icon="BackToWindow" IsEnabled="{x:Bind (x:Boolean)ThemeButton.IsChecked, Mode=OneWay}" />
         </CommandBar>
     </Page.BottomAppBar>
 
     <Grid HorizontalAlignment="Stretch">
-        <winui:TabView x:Name="Tabs"
+        <winui:TabView x:Name="Tabs" 
+                       VerticalAlignment="Stretch"
                        CanDragDropTabs="True"
+                       CanCloseTabs="False"
                        
                        AddButtonClick="Tabs_AddButtonClick"
 
@@ -32,11 +35,9 @@
 
                        TabStripDragItemsStarting="Tabs_TabStripDragItemsStarting">
             <winui:TabView.RightCustomContent>
-                <Grid x:Name="CustomDragRegion" MinWidth="200" Height="34" Background="Red" BorderBrush="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Grid x:Name="CustomDragRegion" MinWidth="200" Height="34" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             </winui:TabView.RightCustomContent>
         </winui:TabView>
-
-        <!--<Grid x:Name="CustomDragRegion" Width="200" Height="36" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" />-->
     </Grid>
 
 </Page>
