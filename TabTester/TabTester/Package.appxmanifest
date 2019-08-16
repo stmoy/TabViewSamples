@@ -9,7 +9,7 @@
   <Identity
     Name="18d226c2-cbd5-4c9e-a1c5-708217527801"
     Publisher="CN=stmoy"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="18d226c2-cbd5-4c9e-a1c5-708217527801" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

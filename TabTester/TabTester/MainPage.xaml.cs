@@ -278,5 +278,10 @@ namespace TabTester
                 Tabs.Background = null;
             }
         }
+
+        private void WidthAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tabs.TabWidthMode = Tabs.TabWidthMode == TabViewWidthMode.Equal ? TabViewWidthMode.SizeToContent : TabViewWidthMode.Equal;
+        }
     }
 }
