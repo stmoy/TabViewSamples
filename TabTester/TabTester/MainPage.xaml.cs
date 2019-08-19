@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.ViewManagement;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace TabTester
 {
@@ -27,7 +28,7 @@ namespace TabTester
             this.InitializeComponent();
 
             // TODO: This is not yet implemented in WinUI
-            //Tabs.Items.VectorChanged += Items_VectorChanged;
+            //Tabs.TabItems.VectorChanged += Items_VectorChanged;
         }
 
         private async void Items_VectorChanged(Windows.Foundation.Collections.IObservableVector<object> sender, Windows.Foundation.Collections.IVectorChangedEventArgs @event)
@@ -57,7 +58,7 @@ namespace TabTester
                 for (int i = 0; i < 5; i++)
                 {
                     // TODO: Add a user control to the content of the TabViewItem
-                    Tabs.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new MyTabContentControl() { DataContext = $"Item {i}" } });
+                    Tabs.TabItems.Add(new TabViewItem() { IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Placeholder }, Header = $"Item {i}", Content = new MyTabContentControl() { DataContext = $"Item {i}" } });
                 }
 
                 Tabs.SelectedIndex = 0;
@@ -65,6 +66,8 @@ namespace TabTester
                 // Extend into the titlebar
                 var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
                 coreTitleBar.ExtendViewIntoTitleBar = true;
+
+                coreTitleBar.LayoutMetricsChanged += CoreTitleBar_LayoutMetricsChanged;
 
                 var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
@@ -82,17 +85,38 @@ namespace TabTester
                 window.TitleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
                 window.TitleBar.ButtonForegroundColor = Windows.UI.Colors.Gray;
 
+                // TODO: What we really want is: CustomDragRegion.MinWidth = titlebBar.SystemOverlayRightInset;
+                //window.Changed += Window_Changed;
+
+                CustomDragRegion.MinWidth = 188;
+
                 window.Frame.DragRegionVisuals.Add(CustomDragRegion);
             }
         }
 
-        public void AddTabToTabs(TabViewItem tab)
+        //private void Window_Changed(AppWindow sender, AppWindowChangedEventArgs args)
+        //{
+        //    if (args.DidTitleBarChange)
+        //    {
+        //        var occ = sender.TitleBar.GetTitleBarOcclusions();
+        //        var occ1 = occ[0];
+        //        var rect1 = occ1.OccludingRect;
+        //    }
+        //}
+
+        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
         {
-            Tabs.Items.Add(tab);
+            CustomDragRegion.MinWidth = sender.SystemOverlayRightInset;
         }
 
+        public void AddTabToTabs(TabViewItem tab)
+        {
+            Tabs.TabItems.Add(tab);
+        }
+
+
         // Create a new Window once the Tab is dragged outside.
-        private async void TabView_TabDraggedOutside(TabView sender, TabViewTabDraggedOutsideEventArgs e)
+        private async void Tabs_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
         {
             AppWindow newWindow = await AppWindow.TryCreateAsync();
 
@@ -101,30 +125,29 @@ namespace TabTester
 
             ElementCompositionPreview.SetAppWindowContent(newWindow, newPage);
 
-            Tabs.Items.Remove(e.Tab);
-            newPage.AddTabToTabs(e.Tab);
+            Tabs.TabItems.Remove(args.Tab);
+            newPage.AddTabToTabs(args.Tab);
 
             await newWindow.TryShowAsync();
         }
 
-
-        private void Tabs_TabStripDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        private void Tabs_TabDragStarting(TabView sender, TabViewTabDragStartingEventArgs args)
         {
             // TODO: This crashes when updating to WinUI because e.Items[0] is NULL. Why?
 
             // TODO: Why does e.Items[0] return the ToggleSwitch and not the item itself??
 
             // We can only drag one tab at a time, so grab the first one...
-            var firstItem = (e.Items[0] as FrameworkElement).Parent;
+            var firstItem = args.Tab;
 
             // ... set the drag data to the tab...
-            e.Data.Properties.Add(DataIdentifier, firstItem);
+            args.Data.Properties.Add(DataIdentifier, firstItem);
 
             // ... and indicate that we can move it 
-            e.Data.RequestedOperation = DataPackageOperation.Move;
+            args.Data.RequestedOperation = DataPackageOperation.Move;
         }
 
-        private void Tab_Drop(object sender, DragEventArgs e)
+        private void Tabs_TabStripDrop(object sender, DragEventArgs e)
         {
             // This event is called when we're dragging between different TabViews
             // It is responsible for handling the drop of the item into the second TabView
@@ -139,7 +162,7 @@ namespace TabTester
                 }
 
                 var destinationTabView = sender as TabView;
-                var destinationItems = destinationTabView.Items;
+                var destinationItems = destinationTabView.TabItems;
 
                 if (destinationItems != null)
                 {
@@ -147,7 +170,7 @@ namespace TabTester
                     var index = -1;
 
                     // Determine which items in the list our pointer is inbetween.
-                    for (int i = 0; i < destinationTabView.Items.Count; i++)
+                    for (int i = 0; i < destinationTabView.TabItems.Count; i++)
                     {
                         var item = destinationTabView.ContainerFromIndex(i) as TabViewItem;
 
@@ -159,15 +182,14 @@ namespace TabTester
                     }
 
                     // The TabView can only be in one tree at a time. Before moving it to the new TabView, remove it from the old.
-                    ((obj as TabViewItem).Parent as TabView).Items.Remove(obj);
-
+                    ((obj as TabViewItem).Parent as TabViewListView).Items.Remove(obj);
 
                     if (index < 0)
                     {
                         // We didn't find a transition point, so we're at the end of the list
                         destinationItems.Add(obj);
                     }
-                    else if (index < destinationTabView.Items.Count)
+                    else if (index < destinationTabView.TabItems.Count)
                     {
                         // Otherwise, insert at the provided index.
                         destinationItems.Insert(index, obj);
@@ -180,7 +202,7 @@ namespace TabTester
         }
 
         // This method prevents the TabView from handling things that aren't text (ie. files, images, etc.)
-        private void Tab_DragOver(object sender, DragEventArgs e)
+        private void Tabs_TabStripDragOver(object sender, DragEventArgs e)
         {
             if (e.DataView.Properties.ContainsKey(DataIdentifier))
             {
@@ -188,9 +210,10 @@ namespace TabTester
             }
         }
 
-        private void Tabs_AddButtonClick(TabView sender, object args)
+
+        private void Tabs_AddTabButtonClick(TabView sender, object args)
         {
-            sender.Items.Add(new TabViewItem() { Icon = new SymbolIcon() { Symbol = Symbol.Placeholder }, Header = "New Item", Content = new MyTabContentControl() { DataContext = "New Item" } });
+            sender.TabItems.Add(new TabViewItem() { IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Placeholder }, Header = "New Item", Content = new MyTabContentControl() { DataContext = "New Item" } });
         }
 
         Windows.UI.Color stashedColor;
@@ -209,7 +232,7 @@ namespace TabTester
                 if (isPlain)
                 {
                     stashedColor = (resource as SolidColorBrush).Color;
-                    
+
                     (resource as SolidColorBrush).Color = GetAccentColorForTheme();
                 }
                 else

@@ -22,21 +22,18 @@
     <Grid HorizontalAlignment="Stretch">
         <winui:TabView x:Name="Tabs" 
                        VerticalAlignment="Stretch"
-                       CanDragDropTabs="True"
-                       CanCloseTabs="True"
+                       AddTabButtonClick="Tabs_AddTabButtonClick"
                        
-                       AddButtonClick="Tabs_AddButtonClick"
-
-                       AllowDrop="True"
-                       TabDraggedOutside="TabView_TabDraggedOutside"
-                         
-                       DragOver="Tab_DragOver"
-                       Drop="Tab_Drop"
-
-                       TabStripDragItemsStarting="Tabs_TabStripDragItemsStarting">
-            <winui:TabView.RightCustomContent>
-                <Grid x:Name="CustomDragRegion" MinWidth="200" Height="34" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-            </winui:TabView.RightCustomContent>
+                       AllowDropTabs="True"
+                       TabDroppedOutside="Tabs_TabDroppedOutside"
+                       
+                       TabStripDragOver="Tabs_TabStripDragOver"
+                       TabStripDrop="Tabs_TabStripDrop"
+                       TabDragStarting="Tabs_TabDragStarting"
+                       >
+            <winui:TabView.TabStripFooter>
+                <Grid x:Name="CustomDragRegion" MinWidth="25" Height="34" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </winui:TabView.TabStripFooter>
         </winui:TabView>
     </Grid>
 
