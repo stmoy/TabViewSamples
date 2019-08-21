@@ -128,6 +128,9 @@ namespace TabTester
             Tabs.TabItems.Remove(args.Tab);
             newPage.AddTabToTabs(args.Tab);
 
+            // TODO: Remove when TabView.TabItems.VectorChagned is exposed.
+            sender.Tag = newWindow;
+
             await newWindow.TryShowAsync();
         }
 
@@ -147,7 +150,7 @@ namespace TabTester
             args.Data.RequestedOperation = DataPackageOperation.Move;
         }
 
-        private void Tabs_TabStripDrop(object sender, DragEventArgs e)
+        private async void Tabs_TabStripDrop(object sender, DragEventArgs e)
         {
             // This event is called when we're dragging between different TabViews
             // It is responsible for handling the drop of the item into the second TabView
@@ -182,7 +185,8 @@ namespace TabTester
                     }
 
                     // The TabView can only be in one tree at a time. Before moving it to the new TabView, remove it from the old.
-                    ((obj as TabViewItem).Parent as TabViewListView).Items.Remove(obj);
+                    var destinationTabViewListView = ((obj as TabViewItem).Parent as TabViewListView);
+                    destinationTabViewListView.Items.Remove(obj);
 
                     if (index < 0)
                     {
@@ -197,6 +201,12 @@ namespace TabTester
 
                     // Select the newly dragged tab
                     destinationTabView.SelectedItem = obj;
+
+                    // TODO: This logic should be handled by VectorChanged, but since VectorChanged isn't yet impl, handle it here instead
+                    if (destinationTabViewListView.Items.Count == 0 && destinationTabView.Tag != null)
+                    {
+                        await (destinationTabView.Tag as AppWindow).CloseAsync();
+                    }
                 }
             }
         }
