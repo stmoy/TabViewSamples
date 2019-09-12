@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="18d226c2-cbd5-4c9e-a1c5-708217527801"
+    Name="2beb19a9-592e-4da9-ac2a-2ded9efbd2ef"
     Publisher="CN=stmoy"
-    Version="1.0.2.0" />
+    Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="18d226c2-cbd5-4c9e-a1c5-708217527801" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="2beb19a9-592e-4da9-ac2a-2ded9efbd2ef" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>TabTester</DisplayName>
+    <DisplayName>TabViewKeyboarding</DisplayName>
     <PublisherDisplayName>stmoy</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="TabTester.App">
+      EntryPoint="TabViewKeyboarding.App">
       <uap:VisualElements
-        DisplayName="TabTester"
+        DisplayName="TabViewKeyboarding"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="TabTester"
+        Description="TabViewKeyboarding"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

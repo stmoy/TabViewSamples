@@ -23,6 +23,7 @@
         <winui:TabView x:Name="Tabs" 
                        VerticalAlignment="Stretch"
                        AddTabButtonClick="Tabs_AddTabButtonClick"
+                       TabCloseRequested="Tabs_TabCloseRequested"
                        
                        AllowDropTabs="True"
                        TabDroppedOutside="Tabs_TabDroppedOutside"

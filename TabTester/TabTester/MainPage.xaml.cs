@@ -316,5 +316,10 @@ namespace TabTester
         {
             Tabs.TabWidthMode = Tabs.TabWidthMode == TabViewWidthMode.Equal ? TabViewWidthMode.SizeToContent : TabViewWidthMode.Equal;
         }
+
+        private void Tabs_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+        {
+            sender.TabItems.Remove(args.Tab);
+        }
     }
 }
